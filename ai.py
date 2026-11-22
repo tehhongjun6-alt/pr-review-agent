@@ -10,7 +10,7 @@ client = OpenAI(
     base_url="https://token.quanxiyun.cloud/v1",
 )
 
-MODEL = "deepseek-v4.1-5flash"
+MODEL = "deepseek-v4.1-flash"
 
 
 def ask_ai(prompt):
