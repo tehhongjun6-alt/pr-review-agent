@@ -40,3 +40,16 @@ for f in files:
     print(f"===== {f['filename']}（{f['status']}）=====")
     print(add_line_numbers(f["patch"]))
 
+
+def post_review(summary, comments):
+    review_url = f"https://api.github.com/repos/{REPO}/pulls/1/reviews"
+    data = {
+        "body": summary,
+        "event": "COMMENT",
+        "comments": comments,
+    }
+    response = requests.post(review_url, headers=headers, json=data)
+    print("GitHub 回应：", response.status_code)
+    if response.status_code >= 400:
+        print(response.text)
+
