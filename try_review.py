@@ -3,15 +3,20 @@ import json
 from ai import ask_ai
 from github_api import files, add_line_numbers, post_review
 
-code = add_line_numbers(files[0]["patch"])
+code = ""
+for f in files:
+    if "patch" not in f:
+        continue
+    code = code + f"\n===== 文件：{f['filename']} =====\n" + add_line_numbers(f["patch"]) + "\n"
 
 question = """你是一位代码审查员。请检查下面的代码，找出 bug 和安全问题。
 
 每一行前面的数字是行号。
+每个文件前面有「===== 文件：xxx =====」，path 要填那个文件名。
 
 只能用 JSON 格式回答，不要输出任何其他文字。格式如下：
 [
-  {"line": 行号, "category": "bug 或 security", "title": "一句话说明问题", "suggestion": "怎么改"}
+    {"path": "文件名", "line": 行号, "category": "bug 或 security", "title": "一句话说明问题", "suggestion": "怎么改"}
 ]
 
 代码：
@@ -31,7 +36,6 @@ for issue in issues:
     print(f"第 {issue['line']} 行 [{issue['category']}]：{issue['title']}")
     print(f"    建议：{issue['suggestion']}")
 
-filename = files[0]["filename"]
 comments = []
 
 for issue in issues:
@@ -43,7 +47,7 @@ for issue in issues:
     body = f"**{icon}**\n\n{issue['title']}\n\n**建议：** {issue['suggestion']}"
 
     comments.append({
-        "path": filename,
+        "path": issue["path"],
         "line": issue["line"],
         "side": "RIGHT",
         "body": body,

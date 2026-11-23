@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.environ["GITHUB_TOKEN"]
 REPO = os.environ["GITHUB_REPO"]
+PR_NUMBER = os.environ.get("PR_NUMBER", "1")
 
 
 def add_line_numbers(patch):
@@ -30,7 +31,7 @@ def add_line_numbers(patch):
     return "\n".join(result)
 
 
-url = f"https://api.github.com/repos/{REPO}/pulls/1/files"
+url = f"https://api.github.com/repos/{REPO}/pulls/{PR_NUMBER}/files"
 headers = {"Authorization": f"Bearer {TOKEN}"}
 
 response = requests.get(url, headers=headers)
@@ -42,7 +43,7 @@ for f in files:
 
 
 def post_review(summary, comments):
-    review_url = f"https://api.github.com/repos/{REPO}/pulls/1/reviews"
+    review_url = f"https://api.github.com/repos/{REPO}/pulls/{PR_NUMBER}/reviews"
     data = {
         "body": summary,
         "event": "COMMENT",
